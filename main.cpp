@@ -24,23 +24,27 @@ int main(void)
 
 	while(true)
 	{
+		cout << "================================================" << endl;
 		cout << "Please select one of the options below:" << endl;
-		cout << "1. Search by title" << endl;
+		cout << "1. Search by title (fuzzy search)" << endl;
 		cout << "2. Suggest a good movie" << endl;
 		cout << "3. Suggest a bad movie" << endl;
 		cout << "4. Quit" << endl;
 		cout << "================================================" << endl;
 		
-		cout << "Input: " << endl;
+		cout << "Input: ";
 		
-		string input1;
-		cin >> input1;
+		string input;
 
+		cin >> input;
+
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // flushes stdin so that getline works later on
+		
 		int selection = 0;
 
 		try
 		{
-			selection = stoi(input1);
+			selection = stoi(input);
 		}
 		catch (const exception &e)
 		{
@@ -51,17 +55,47 @@ int main(void)
 		switch(selection)
 		{
 			case 1:
+			{
+				const char* query_template = "SELECT title FROM movies WHERE title LIKE ? LIMIT 10;";
+
+				sqlite3_stmt* statement;
+				sqlite3_prepare_v2(db, query_template, -1, &statement, NULL); // statement = query_template
+
+				cout << "================================================" << endl;
+				cout << "Movie title? ";
+				getline(cin, input); // std::cin only accepts until a whitespace character, getline...gets the whole line
+				cout << "================================================" << endl;
+
+				input = '%' + input + '%'; // do fuzzy search
+
+				sqlite3_bind_text(statement, 1, input.c_str(), -1, SQLITE_TRANSIENT); // statement += user_input. accepts c-style strings not std::string
+
+				while (sqlite3_step(statement) == SQLITE_ROW) // execute and returns each row
+				{
+					string title = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
+					cout << title << endl;
+				}
+
+				sqlite3_finalize(statement); // does a free() on a statement, 
 				break;
+			}
 			case 2:
+			{
 				break;
+			}
 			case 3:
+			{
 				break;
+			}
 			case 4:
-				sqlite3_close(db); // Doesn't handle SIGINT properly but it's not a C++ course
+				sqlite3_close(db);
 				return 0;
 			default:
 				cout << "Invalid Input" << endl;
 				break;
 		}
 	}
+	sqlite3_close(db); // doesn't handle SIGINT properly but it's not a C++ course
 }
+
+
