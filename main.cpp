@@ -81,10 +81,40 @@ int main(void)
 			}
 			case 2:
 			{
+				const char* query_template = "SELECT title FROM movies AS m INNER JOIN ratings AS r ON m.id = r.movie_id WHERE r.rating >= 7.5 ORDER BY RANDOM() LIMIT 10;";
+				
+				sqlite3_stmt* statement;
+				sqlite3_prepare_v2(db, query_template, -1, &statement, NULL); // statement = query_template
+
+				sqlite3_bind_text(statement, 1, input.c_str(), -1, SQLITE_TRANSIENT); // statement += user_input. accepts c-style strings not std::string
+
+				while (sqlite3_step(statement) == SQLITE_ROW) // execute and returns each row
+				{
+					string title = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
+					cout << title << endl;
+				}
+
+				sqlite3_finalize(statement); // does a free() on a statement, 
+
 				break;
 			}
 			case 3:
 			{
+				const char* query_template = "SELECT title FROM movies AS m INNER JOIN ratings AS r ON m.id = r.movie_id WHERE r.rating <= 3.0 ORDER BY RANDOM() LIMIT 10;";
+				
+				sqlite3_stmt* statement;
+				sqlite3_prepare_v2(db, query_template, -1, &statement, NULL); // statement = query_template
+
+				sqlite3_bind_text(statement, 1, input.c_str(), -1, SQLITE_TRANSIENT); // statement += user_input. accepts c-style strings not std::string
+
+				while (sqlite3_step(statement) == SQLITE_ROW) // execute and returns each row
+				{
+					string title = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
+					cout << title << endl;
+				}
+
+				sqlite3_finalize(statement); // does a free() on a statement, 
+
 				break;
 			}
 			case 4:
