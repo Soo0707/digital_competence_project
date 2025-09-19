@@ -57,7 +57,7 @@ int main(void)
 		{
 			case 1:
 			{
-				const char* query_template = "SELECT title FROM movies WHERE title LIKE ? LIMIT 10;";
+				const char* query_template = "SELECT title, r.rating FROM movies INNER JOIN ratings AS r WHERE title LIKE ? LIMIT 10;";
 
 				sqlite3_stmt* statement;
 				sqlite3_prepare_v2(db, query_template, -1, &statement, NULL); // statement = query_template
@@ -74,7 +74,11 @@ int main(void)
 				while (sqlite3_step(statement) == SQLITE_ROW) // execute and returns each row
 				{
 					string title = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
-					cout << title << endl;
+                    // Get the rating from the second column (index 1)
+                    double rating = sqlite3_column_double(statement, 1);
+                    
+                    // Print both title and rating
+                    cout << title << " (Rating: " << rating << ")" << endl;
 				}
 
 				sqlite3_finalize(statement); // does a free() on a statement, 
@@ -90,10 +94,10 @@ int main(void)
 				while (sqlite3_step(statement) == SQLITE_ROW) // execute and returns each row
                 {
                     string title = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
-                    // NEW: Get the rating from the second column (index 1)
+                    // Get the rating from the second column (index 1)
                     double rating = sqlite3_column_double(statement, 1);
                     
-                    // NEW: Print both title and rating
+                    // Print both title and rating
                     cout << title << " (Rating: " << rating << ")" << endl;
                 }
 
@@ -111,10 +115,10 @@ int main(void)
 				while (sqlite3_step(statement) == SQLITE_ROW) // execute and returns each row
                 {
                     string title = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
-                    // NEW: Get the rating from the second column (index 1)
+                    // Get the rating from the second column (index 1)
                     double rating = sqlite3_column_double(statement, 1);
                     
-                    // NEW: Print both title and rating
+                    // Print both title and rating
                     cout << title << " (Rating: " << rating << ")" << endl;
                 }
 
