@@ -37,6 +37,7 @@ int main(void)
 		string input;
 
 		cin >> input;
+		cout << endl;
 
 		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // flushes stdin so that getline works later on
 		
@@ -128,6 +129,14 @@ int main(void)
 				cout << "Invalid Input" << endl;
 				break;
 		}
+
+		cout << "================================================" << endl;
+		cout << "Press any keys to return" << endl;
+		cout << "================================================" << endl;
+
+		cin.get();
+
+		cout << "\n\n\n\n\n\n\n\n";
 	}
 	sqlite3_close(db); // doesn't handle SIGINT properly but it's not a C++ course
 }
