@@ -57,7 +57,7 @@ int main(void)
 		{
 			case 1:
 			{
-				const char* query_template = "SELECT title, r.rating FROM movies INNER JOIN ratings AS r WHERE title LIKE ? LIMIT 10;";
+				const char* query_template = "SELECT title, AVG(r.rating) FROM movies AS m INNER JOIN ratings AS r ON m.id = r.movie_id WHERE title LIKE ? GROUP BY title LIMIT 10;";
 
 				sqlite3_stmt* statement;
 				sqlite3_prepare_v2(db, query_template, -1, &statement, NULL); // statement = query_template
